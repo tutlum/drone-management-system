@@ -24,7 +24,7 @@ public class FieldService {
     }
 
     private boolean isInsideFieldBoundaries(int x, int y) {
-        if (x < 0 || x >= sizeX || y < 0 || y >= sizeX) {
+        if (x < 0 || x >= sizeX || y < 0 || y >= sizeY) {
             return false;
         }
         return true;
@@ -36,7 +36,7 @@ public class FieldService {
         if (drones.containsKey(drone.getName()))
             throw new IllegalArgumentException("Drone with this name (" + drone.getName() + ") already registered");
         if (!isInsideFieldBoundaries(drone.getPosX(), drone.getPosY()))
-            throw new Exception("Drone outside field boundaries");
+            throw new IllegalArgumentException("Drone outside field boundaries");
         if (drones.values().stream().anyMatch(d -> d.getPosX()== drone.getPosX() && d.getPosY()== drone.getPosY()))
             throw new RuntimeException("There is already a drone in that area.");
         drones.put(drone.getName(), drone);
@@ -76,25 +76,25 @@ public class FieldService {
     }
 
     private void moveDroneInSteps(Drone drone, Drone targetDrone) throws InterruptedException {
-        int dx = drone.getPosX() - targetDrone.getPosX() < 0 ? -1 : 1;
-        int dy = drone.getPosY() - targetDrone.getPosY() < 0 ? -1 : 1;
+        int dx = targetDrone.getPosX()- drone.getPosX()  < 0 ? -1 : 1;
+        int dy = targetDrone.getPosY() - drone.getPosY()  < 0 ? -1 : 1;
 
         // Rotate and move to correct X position
-        Direction targetDirection = dx == 1 ? Direction.North : Direction.South;
+        Direction targetDirection = dx == 1 ? Direction.East : Direction.West;
         while (drone.getDirection() != targetDirection)
             rotateDrone(drone);
         int tries = 0;
         while (drone.getPosX() != targetDrone.getPosX() && tries++ < timeoutTries)
-            tryMoving(drone, drone.getPosX() - dx, drone.getPosY());
+            tryMoving(drone, drone.getPosX() + dx, drone.getPosY());
         if (tries>timeoutTries) logger.warn("drone did not reach destination");
 
         // Rotate and move to correct Y position
-        targetDirection = dy == 1 ? Direction.East : Direction.West;
+        targetDirection = dy == 1 ? Direction.North : Direction.South;
         while (drone.getDirection() != targetDirection)
             rotateDrone(drone);
         tries = 0;
         while (drone.getPosY() != targetDrone.getPosY() && tries++ < timeoutTries)
-            tryMoving(drone, drone.getPosX(), drone.getPosY() - dy);
+            tryMoving(drone, drone.getPosX(), drone.getPosY() + dy);
         if (tries>timeoutTries) logger.warn("drone did not reach destination");
 
         // If nessesary rotate to correct direction
@@ -127,7 +127,7 @@ public class FieldService {
 
     public Drone getDrone(String name) throws Exception {
         if (!drones.containsKey(name))
-            throw new Exception("No drone with name " + name + " found");
+            throw new Exception("Drone with this name (" + name + ") not found");
         return drones.get(name);
     }
 }
