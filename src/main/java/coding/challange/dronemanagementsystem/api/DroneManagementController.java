@@ -14,7 +14,7 @@ public class DroneManagementController {
     @PostMapping("/registerDrone")
     public Drone registerDrone(@RequestBody Drone drone) throws ResponseStatusException {
         try {
-            if (drone.getSpeed()==0)
+            if (drone.getSpeed() == 0)
                 drone.setSpeed(200);
             field.addDrone(drone);
             return field.getDrone(drone.getName());
@@ -33,6 +33,7 @@ public class DroneManagementController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, exc.getMessage(), exc);
         }
     }
+
     @DeleteMapping("/removeDrone/{name}")
     public String removeDrone(@PathVariable String name) throws ResponseStatusException {
         try {
@@ -56,6 +57,7 @@ public class DroneManagementController {
         }
 
     }
+
     @PostMapping("/moveDroneWait")
     public Drone moveDroneWait(@RequestBody Drone drone) throws ResponseStatusException {
         try {

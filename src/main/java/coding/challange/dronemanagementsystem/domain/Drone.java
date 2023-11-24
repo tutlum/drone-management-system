@@ -13,7 +13,7 @@ public class Drone {
         init(name, direction, posX, posY, speed);
     }
 
-    private void init(String name, Direction direction, int posX, int posY, int speed){
+    private void init(String name, Direction direction, int posX, int posY, int speed) {
         this.name = name;
         this.direction = direction;
         this.posX = posX;

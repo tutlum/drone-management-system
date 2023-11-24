@@ -34,10 +34,11 @@ public class FieldService {
             throw new IllegalArgumentException("Drone with this name (" + drone.getName() + ") already registered");
         if (!isInsideFieldBoundaries(drone.getPosX(), drone.getPosY()))
             throw new IllegalArgumentException("Drone outside field boundaries");
-        if (drones.values().stream().anyMatch(d -> d.getPosX()== drone.getPosX() && d.getPosY()== drone.getPosY()))
+        if (drones.values().stream().anyMatch(d -> d.getPosX() == drone.getPosX() && d.getPosY() == drone.getPosY()))
             throw new RuntimeException("There is already a drone in that area.");
         drones.put(drone.getName(), drone);
     }
+
     public void removeDrone(String name) throws Exception {
         if (!drones.containsKey(name))
             throw new Exception("Drone with this name (" + name + ") not found");
@@ -57,7 +58,7 @@ public class FieldService {
             throw new IllegalArgumentException("Drone outside field boundaries");
 
         Drone drone = getDrone(targetDrone.getName());
-        if (targetDrone.getSpeed()!=0)
+        if (targetDrone.getSpeed() != 0)
             drone.setSpeed(targetDrone.getSpeed());
         logger.info("Speed: " + drone.getSpeed());
         if (wait) {
@@ -74,8 +75,8 @@ public class FieldService {
     }
 
     private void moveDroneInSteps(Drone drone, Drone targetDrone) throws InterruptedException {
-        int dx = targetDrone.getPosX()- drone.getPosX()  < 0 ? -1 : 1;
-        int dy = targetDrone.getPosY() - drone.getPosY()  < 0 ? -1 : 1;
+        int dx = targetDrone.getPosX() - drone.getPosX() < 0 ? -1 : 1;
+        int dy = targetDrone.getPosY() - drone.getPosY() < 0 ? -1 : 1;
 
         // Rotate and move to correct X position
         Direction targetDirection = dx == 1 ? Direction.East : Direction.West;
@@ -84,7 +85,7 @@ public class FieldService {
         int tries = 0;
         while (drone.getPosX() != targetDrone.getPosX() && tries++ < timeoutTries)
             tryMoving(drone, drone.getPosX() + dx, drone.getPosY());
-        if (tries>timeoutTries) logger.warn("drone did not reach destination");
+        if (tries > timeoutTries) logger.warn("drone did not reach destination");
 
         // Rotate and move to correct Y position
         targetDirection = dy == 1 ? Direction.North : Direction.South;
@@ -93,7 +94,7 @@ public class FieldService {
         tries = 0;
         while (drone.getPosY() != targetDrone.getPosY() && tries++ < timeoutTries)
             tryMoving(drone, drone.getPosX(), drone.getPosY() + dy);
-        if (tries>timeoutTries) logger.warn("drone did not reach destination");
+        if (tries > timeoutTries) logger.warn("drone did not reach destination");
 
         // If nessesary rotate to correct direction
         if (targetDrone.getDirection() != null)
