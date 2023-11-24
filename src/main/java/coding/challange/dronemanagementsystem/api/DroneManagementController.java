@@ -9,7 +9,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 public class DroneManagementController {
 
-    private FieldService field = new FieldService(10, 10);
+    private final FieldService field = new FieldService(10, 10);
 
     @PostMapping("/registerDrone")
     public Drone registerDrone(@RequestBody Drone drone) throws ResponseStatusException {
@@ -18,8 +18,6 @@ public class DroneManagementController {
                 drone.setSpeed(200);
             field.addDrone(drone);
             return field.getDrone(drone.getName());
-        } catch (IllegalArgumentException exc) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exc.getMessage(), exc);
         } catch (RuntimeException exc) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exc.getMessage(), exc);
         } catch (Exception exc) {

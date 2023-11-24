@@ -8,11 +8,11 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 
 public class FieldService {
-    private int sizeX;
-    private int sizeY;
-    private HashMap<String, Drone> drones;
+    private final int sizeX;
+    private final int sizeY;
+    private final HashMap<String, Drone> drones;
 
-    private int timeoutTries = 3;
+    private int timeoutTries;
 
     Logger logger = LoggerFactory.getLogger(FieldService.class);
 
@@ -24,13 +24,10 @@ public class FieldService {
     }
 
     private boolean isInsideFieldBoundaries(int x, int y) {
-        if (x < 0 || x >= sizeX || y < 0 || y >= sizeY) {
-            return false;
-        }
-        return true;
+        return x >= 0 && x < sizeX && y >= 0 && y < sizeY;
     }
 
-    public void addDrone(Drone drone) throws Exception {
+    public void addDrone(Drone drone) throws RuntimeException {
         if (drone.getName() == null || drone.getDirection() == null)
             throw new IllegalArgumentException("Drone needs to have at least a name and direction");
         if (drones.containsKey(drone.getName()))
@@ -70,6 +67,7 @@ public class FieldService {
                 try {
                     moveDroneInSteps(drone, targetDrone);
                 } catch (InterruptedException e) {
+                    logger.warn("Drone moving was interrupted");
                 }
             }).start();
         }
@@ -104,7 +102,7 @@ public class FieldService {
     }
 
     private void tryMoving(Drone drone, int posX, int posY) throws InterruptedException {
-        if (!drones.values().stream().anyMatch(d -> d != drone && d.getPosX() == posX && d.getPosY() == posY)) {
+        if (drones.values().stream().noneMatch(d -> d != drone && d.getPosX() == posX && d.getPosY() == posY)) {
             drone.setPosX(posX);
             drone.setPosY(posY);
         }
